@@ -10,6 +10,7 @@ AU-DUB is an advanced platform designed for the automatic dubbing of videos, uti
 - [Docker Engine](https://www.docker.com/) 27.1.1
 - [Docker Compose](https://www.docker.com/) 2.29.1
 - [Python](https://www.python.org/) 3.10
+- [PyTorch](https://pytorch.org/) with Cuda
 
 #### Setup Environment
 AU Dub uses RabbitMQ for internal module communication, as long as MongoDB to store the data from the videos. 

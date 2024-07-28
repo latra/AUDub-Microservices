@@ -1,7 +1,8 @@
 filestorage:
   path: ./data/
 rabbitmq:
-  host: 172.17.0.3
+  host: 172.20.0.3
+  port: 15672
   username: guest
   password: password
   
@@ -9,7 +10,8 @@ rabbitmq:
   status_queue: status_queue 
 
 mongodb:
-  uri: mongodb://172.17.0.2/
+  host: 172.20.0.2
+  port: 27017
   username: root
   password: password
   
