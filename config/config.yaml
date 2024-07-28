@@ -1,0 +1,15 @@
+rabbitmq:
+  host: 172.17.0.3
+  username: guest
+  password: password
+  
+  job_queue: job_queue
+  status_queue: status_queue 
+
+mongodb:
+  uri: mongodb://172.17.0.2/
+  username: root
+  password: password
+  
+  database: audub
+  collection: videos
