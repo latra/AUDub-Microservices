@@ -1,3 +1,5 @@
 .environment
 __pycache__
 data/
+*.mp4
+*.mp3
