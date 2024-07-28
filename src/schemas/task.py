@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 from pydantic import BaseModel
 import json
 
@@ -50,6 +51,7 @@ class STTTask(Task):
 class TranslationTask(Task):
     video_id: str
     target_language: str
+    additional_info: Optional[str]
 
 task_classes = {
     TaskTypes.PREPROCESSING: PreprocessingTask,

@@ -10,7 +10,8 @@ AU-DUB is an advanced platform designed for the automatic dubbing of videos, uti
 - [Docker Engine](https://www.docker.com/) 27.1.1
 - [Docker Compose](https://www.docker.com/) 2.29.1
 - [Python](https://www.python.org/) 3.10
-- [PyTorch](https://pytorch.org/) with Cuda
+- [PyTorch](https://pytorch.org) 2.4.0
+- [Ollama](https://ollama.com/) 2.4.0
 
 #### Setup Environment
 AU Dub uses RabbitMQ for internal module communication, as long as MongoDB to store the data from the videos. 
@@ -23,6 +24,35 @@ By default, RabbitMQ instance will run on `172.20.0.3` and MongoDB on `172.20.0.
 #### Run Modules
 
 
+#### Usage
+**Preprocessing Module**
+```json
+{
+    "task_type": "PREPROCESSING",
+    "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
+    "video_id": "video123",
+    "video_source":"YOUTUBE",
+    "video_uri":"https://www.youtube.com/shorts/Ile_ueJGON8",
+}
+```
+**Transcription Module**
+```json
+{
+    "task_type": "SPEECH_TO_TEXT",
+    "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
+    "video_id": "video123"
+}
+```
+**Translation Module**
+```json
+{
+    "task_type": "TRANSLATION",
+    "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
+    "video_id": "video123",
+    "target_language": "spanish",
+    "additional_info": "it's a famous song"
+}
+```
 
 ## Credits
 
