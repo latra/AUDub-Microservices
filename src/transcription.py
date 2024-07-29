@@ -60,9 +60,12 @@ class TranscriptionService(Microservice):
             Microservice.save_temporal_file(f"audio-{video_data.video_id}.mp3", self.filestorage.get_file(video_data.audio_metadata.uri))
             audio_array = read(f"audio-{video_data.video_id}.mp3", normalized=True)
             sample = {"array": audio_array, "sampling_rate": 16000}
-            result = self.pipe(sample, generate_kwargs={"task": "translate", "return_timestamps": True})
+            result = self.pipe(sample, generate_kwargs={"task": "transcribe", "return_timestamps": True, "language": task_request.video_language})
             timestamped_dict = format_transcription(result["chunks"])
-            self.mongodb_connection.save_item(video_id=video_data.video_id, key="transcriptions.en", content=timestamped_dict)
+            video_data.transcriptions[task_request.video_language] = timestamped_dict
+            video_data.original_language = task_request.video_language
+            video_data.original_script = result["text"]
+            self.mongodb_connection.save_item(video_id=video_data.video_id, content=video_data.model_dump())
             Microservice.remove_files((f"audio-{video_data.video_id}.mp3",))
             status.status = True
         self.rabbitmq_connection.send_message(status.to_bytes())

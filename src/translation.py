@@ -10,7 +10,8 @@ from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import ollama
 import ffmpeg
 import numpy as np
-
+import re
+import json
 
 class TranslationService(Microservice):
     def __init__(self, config_path) -> None:
@@ -29,10 +30,12 @@ class TranslationService(Microservice):
         video_data = Video.from_dict(self.mongodb_connection.get_item(task_request.video_id))
         if video_data:
             #TODO hay que seguir jugando y probando esto
-            promp = 'Target Language:\n{}\nOriginal transcription:\n{}'.format(task_request.target_language, video_data.transcriptions["en"]) 
-            promp += '\nNotice that the original video is about {}'.format(task_request.additional_info) if task_request.additional_info else ''
-            promp += '\nMake sure that the translated output has sense'
-            promp += '\nIMPORTANT: Make sure to provide ONLY the JSON with the timestamps and the translation sentence.'
+            promp = f"""
+The original language of the video is {video_data.original_language} and you must translate it to {task_request.target_language}.
+The script of the original video is:
+{video_data.original_script}
+{video_data.transcriptions[video_data.original_language]}
+"""
             print(promp)
             response = ollama.chat(model='translation-model', messages=[
             {
@@ -40,10 +43,25 @@ class TranslationService(Microservice):
                 'content': promp,
             },
             ])
-            print(response['message']['content'])
+            video_data.transcriptions[task_request.target_language] = get_translated_dict(response['message']['content'])
+            self.mongodb_connection.save_item(video_id=video_data.video_id, content=video_data.model_dump())
+
             status.status = True
         self.rabbitmq_connection.send_message(status.to_bytes())
         
+
+def get_translated_dict(response: str):
+
+    print(response)
+# Expresión regular para extraer los datos
+    pattern = r'\- \(([\d.,]+), ([\d.,]+)\): "*(.*)"*'
+    # Buscar todas las coincidencias
+    matches = re.findall(pattern, response)
+
+    # Crear el diccionario
+    transcription_dict = {f"({start}, {end})": text for start, end, text in matches}
+
+    return transcription_dict
 
 def format_transcription(transcription):
     result = {}

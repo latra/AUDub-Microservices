@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 class VideoMetadata(BaseModel):
     uri: str
@@ -38,6 +38,8 @@ class Video(BaseModel):
     video_id: str
     video_metadata: VideoMetadata
     audio_metadata: AudioMetadata
+    original_script: Optional[str]
+    original_language: Optional[str]
     transcriptions: dict
 
     @classmethod
@@ -46,5 +48,7 @@ class Video(BaseModel):
             video_id=data['video_id'],
             video_metadata=VideoMetadata(**data['video_metadata']),
             audio_metadata=AudioMetadata(**data['audio_metadata']),
-            transcriptions=data['transcriptions']
+            transcriptions=data['transcriptions'],
+            original_language=data['original_language'],
+            original_script=data['original_script']
         )

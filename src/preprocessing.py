@@ -42,8 +42,8 @@ class PreprocessingService(Microservice):
             self.remove_files(isolated_files)
 
             new_video = Video(video_id=task_request.video_id, video_metadata=VideoMetadata.from_video_info(video_uri, video_info),
-                              audio_metadata=AudioMetadata.from_audio_info(audio_uri, audio_info), transcriptions={})
-            self.mongodb_connection.save_item(video_id=task_request.video_id, key=None, content=new_video.model_dump())
+                              audio_metadata=AudioMetadata.from_audio_info(audio_uri, audio_info), transcriptions={}, original_script= None, original_language=None)
+            self.mongodb_connection.save_item(video_id=task_request.video_id, content=new_video.model_dump())
             status.status = True
         self.rabbitmq_connection.send_message(status.to_bytes())
 

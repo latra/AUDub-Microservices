@@ -30,9 +30,9 @@ By default, RabbitMQ instance will run on `172.20.0.3` and MongoDB on `172.20.0.
 {
     "task_type": "PREPROCESSING",
     "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
-    "video_id": "video123",
+    "video_id": "video_spanish",
     "video_source":"YOUTUBE",
-    "video_uri":"https://www.youtube.com/shorts/Ile_ueJGON8",
+    "video_uri":"https://www.youtube.com/shorts/Ile_ueJGON8"
 }
 ```
 **Transcription Module**
@@ -40,7 +40,8 @@ By default, RabbitMQ instance will run on `172.20.0.3` and MongoDB on `172.20.0.
 {
     "task_type": "SPEECH_TO_TEXT",
     "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
-    "video_id": "video123"
+    "video_id": "video_spanish",
+    "video_language": "spanish"
 }
 ```
 **Translation Module**
@@ -48,9 +49,9 @@ By default, RabbitMQ instance will run on `172.20.0.3` and MongoDB on `172.20.0.
 {
     "task_type": "TRANSLATION",
     "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
-    "video_id": "video123",
+    "video_id": "video_spanish",
     "target_language": "spanish",
-    "additional_info": "it's a famous song"
+    "additional_info": "It's a video about health recommendations"
 }
 ```
 

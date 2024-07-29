@@ -28,6 +28,8 @@ class RabbitMQConnector:
     def callback(self, ch, method, properties, body, type_target, function_callback):
         task_request = Task.from_json(json.loads(body))
         if type(task_request) == type_target:
+            print("Task...")
+            print(task_request)
             function_callback(task_request)
         
     def send_message(self, message: bytes) -> str:

@@ -14,12 +14,12 @@ class MongoConnection:
         self.collection_connection = MongoClient("mongodb://{}:{}@{}".format(self.user, self.password, self.host))[self.database][self.collection]
 # mongodb://root:password@172.20.0.2:27017/
 
-    def save_item(self, video_id: str, key: str, content: Any):
+    def save_item(self, video_id: str, content: Any):
         result = self.collection_connection.find_one({video_id: {"$exists": True}})
         if result:
             self.collection_connection.update_one(
                 {video_id: {"$exists": True}},
-                {"$set": {f"{video_id}.{key}": content}}
+                {"$set": {f"{video_id}": content}}
             )
         else:
             self.collection_connection.insert_one({video_id: content})

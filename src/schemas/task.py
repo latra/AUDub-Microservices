@@ -47,11 +47,11 @@ class PreprocessingTask(Task):
 
 class STTTask(Task):
     video_id: str
+    video_language: str
 
 class TranslationTask(Task):
     video_id: str
     target_language: str
-    additional_info: Optional[str]
 
 task_classes = {
     TaskTypes.PREPROCESSING: PreprocessingTask,
