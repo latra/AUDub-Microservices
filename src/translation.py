@@ -4,9 +4,7 @@ from repositories.rabbitmq import RabbitMQConnector
 from repositories.filestorage import FileManager
 from schemas.task import TaskTypes, task_classes, TranslationTask, TaskStatus
 from schemas.microservice import Microservice
-import ollama
-import ffmpeg
-import numpy as np
+from ollama import Client
 import re
 
 class TranslationService(Microservice):
@@ -15,7 +13,8 @@ class TranslationService(Microservice):
         self.mongodb_connection: MongoConnection = MongoConnection(self.config)
         self.rabbitmq_connection: RabbitMQConnector = RabbitMQConnector(self.config, Queues.translation_queue)
         self.filestorage: FileManager = FileManager(self.config)
-
+        self.ollama_client = Client(self.config["ollama"]["host"])
+        self.ollama_client.create("translation-model", "config/Modelfile")
 
     def start(self):
         self.rabbitmq_connection.subscribe(task_classes[TaskTypes.TRANSLATION], self.callback)
@@ -31,7 +30,7 @@ The script of the original video is:
 {video_data.original_script}
 {video_data.transcriptions[video_data.original_language]}
 """
-            response = ollama.chat(model='translation-model', messages=[
+            response = self.ollama_client.chat(model='translation-model', messages=[
             {
                 'role': 'user',
                 'content': promp,
@@ -61,24 +60,6 @@ def format_transcription(transcription):
     for transc in transcription:
         result[str(transc["timestamp"])] = transc["text"]
     return result
-
-def read(file_uri, normalized=False):
-    """MP3 to numpy array using ffmpeg"""
-    try:
-        out, err = (
-            ffmpeg.input(file_uri)
-            .output('pipe:', format='wav')
-            .run(capture_stdout=True, capture_stderr=True)
-        )
-        a = np.frombuffer(out, np.int16)
-
-        if normalized:
-            return np.float32(a) / 2**15
-        else:
-            return a
-    except ffmpeg.Error as e:
-        print("ffmpeg error:", e.stderr.decode('utf8'))
-        raise
 
 service = TranslationService("config/config.yaml")
 service.start()

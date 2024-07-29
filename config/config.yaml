@@ -1,5 +1,5 @@
 filestorage:
-  path: ./data/
+  path: /data/
 rabbitmq:
   host: 172.20.0.3
   port: 15672
@@ -21,3 +21,6 @@ mongodb:
   database: audub
   video_collection: videos
   voice_collection: voices
+
+ollama:
+  host:  172.20.0.10

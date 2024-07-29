@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      audub-network:
+        ipv4_address: 172.20.0.2
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=password
+    networks:
+      audub-network:
+        ipv4_address: 172.20.0.3
+
+  ollama:
+    image: ollama/ollama:0.3.0
+    container_name: ollama
+    networks:
+      audub-network:
+        ipv4_address: 172.20.0.10
+
+    restart: always
+
+  preprocessing:
+    build: 
+      context: ..
+      dockerfile: ./docker/preprocessing.Dockerfile
+    container_name: microservice-preprocessing
+    volumes:
+      - ../config/config.yaml:/microservice/config/config.yaml
+      - ../data-microservices:/data/
+    networks:
+      audub-network:
+        ipv4_address: 172.20.0.4
+    restart: always
+
+  transcription:
+    build: 
+      context: ..
+      dockerfile: ./docker/transcription.Dockerfile
+    container_name: microservice-transcription
+    volumes:
+      - ../config/config.yaml:/microservice/config/config.yaml
+      - ../data-microservices:/data/
+
+    networks:
+      audub-network:
+        ipv4_address: 172.20.0.5
+    restart: always
+
+  translation:
+    build: 
+      context: ..
+      dockerfile: ./docker/translation.Dockerfile
+    container_name: microservice-translation
+    volumes:
+      - ../config/config.yaml:/microservice/config/config.yaml
+      - ../config/Modelfile:/microservice/config/Modelfile
+      - ../data-microservices:/data/
+
+    networks:
+      audub-network:
+        ipv4_address: 172.20.0.6
+
+    restart: always
+
+
+networks:
+  audub-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  mongo-data:
+    driver: local
