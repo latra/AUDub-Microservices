@@ -55,6 +55,9 @@ class TranslationTask(Task):
 
 class TTSTask(Task):
     video_id: str
+    timestamp_key: str
+    target_language: str
+    voice_target_id: str
 
 task_classes = {
     TaskTypes.PREPROCESSING: PreprocessingTask,

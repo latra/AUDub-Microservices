@@ -10,3 +10,4 @@ torchaudio==2.4.0
 transformers==4.43.3
 accelerate==0.33.0
 ollama==0.3.0
+pycountry==24.6.1

@@ -6,7 +6,10 @@ rabbitmq:
   username: guest
   password: password
   
-  job_queue: job_queue
+  video_queue: video_queue
+  transcription_queue: transcription_queue
+  translation_queue: translation_queue
+  tts_queue: tts_queue
   status_queue: status_queue 
 
 mongodb:
@@ -16,4 +19,5 @@ mongodb:
   password: password
   
   database: audub
-  collection: videos
+  video_collection: videos
+  voice_collection: voices

@@ -40,7 +40,7 @@ By default, RabbitMQ instance will run on `172.20.0.3` and MongoDB on `172.20.0.
 {
     "task_type": "SPEECH_TO_TEXT",
     "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
-    "video_id": "video_spanish",
+    "video_id": "terpuzle",
     "video_language": "spanish"
 }
 ```
@@ -49,12 +49,22 @@ By default, RabbitMQ instance will run on `172.20.0.3` and MongoDB on `172.20.0.
 {
     "task_type": "TRANSLATION",
     "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
-    "video_id": "video_spanish",
+    "video_id": "italianotest",
     "target_language": "spanish",
-    "additional_info": "It's a video about health recommendations"
 }
 ```
+**TTS Module**
+```json
+{
+    "task_type": "TEXT_TO_SPEECH",
+    "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
+    "video_id": "terpuzle",
+    "target_language": "spanish",
+    "timestamp_key": "(0.0, 2.0)",
+    "voice_target_id": ""
 
+}
+```
 ## Credits
 
 - [OpenAI - Whisper]() - Used for video transcription

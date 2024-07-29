@@ -7,12 +7,12 @@ import json
 
 
 class RabbitMQConnector:
-    def __init__(self, config: dict) -> None:
+    def __init__(self, config: dict, queue: str) -> None:
         self.host = config['rabbitmq']['host']
         self.port = config['rabbitmq']['port']
         self.user = config['rabbitmq']['username']
         self.password = config['rabbitmq']['password']
-        self.job_queue =  config['rabbitmq']['job_queue']
+        self.job_queue =  config['rabbitmq'][queue]
         self.status_queue =  config['rabbitmq']['status_queue']
         self.credentials = pika.credentials.PlainCredentials(self.user, self.password)
 

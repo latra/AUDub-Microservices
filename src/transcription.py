@@ -1,14 +1,14 @@
-from utils.config import load_config
+from utils.config import load_config, Queues
 from repositories.mongodb import MongoConnection
 from repositories.rabbitmq import RabbitMQConnector
 from repositories.filestorage import FileManager
-from repositories.youtube import download_video
-from schemas.task import TaskTypes, task_classes, STTTask, VideoSource, TaskStatus
+from schemas.task import TaskTypes, task_classes, STTTask, TaskStatus
 from schemas.microservice import Microservice
-from schemas.video import Video, VideoMetadata, AudioMetadata
+from schemas.video import Video
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import torch
 import ffmpeg
+from pycountry import languages
 import numpy as np
 
 
@@ -16,7 +16,7 @@ class TranscriptionService(Microservice):
     def __init__(self, config_path) -> None:
         self.config: dict = load_config(config_path)
         self.mongodb_connection: MongoConnection = MongoConnection(self.config)
-        self.rabbitmq_connection: RabbitMQConnector = RabbitMQConnector(self.config)
+        self.rabbitmq_connection: RabbitMQConnector = RabbitMQConnector(self.config, Queues.transcription_queue)
         self.filestorage: FileManager = FileManager(self.config)
         model, processor, torch_dtype, device = self.start_model()
 
@@ -55,17 +55,17 @@ class TranscriptionService(Microservice):
 
     def callback(self, task_request: STTTask):
         status = TaskStatus(task_uuid=task_request.task_uuid, status=False, message="")
-        video_data = Video.from_dict(self.mongodb_connection.get_item(task_request.video_id))
+        video_data = self.mongodb_connection.get_video(task_request.video_id)
         if video_data:
             Microservice.save_temporal_file(f"audio-{video_data.video_id}.mp3", self.filestorage.get_file(video_data.audio_metadata.uri))
             audio_array = read(f"audio-{video_data.video_id}.mp3", normalized=True)
             sample = {"array": audio_array, "sampling_rate": 16000}
-            result = self.pipe(sample, generate_kwargs={"task": "transcribe", "return_timestamps": True, "language": task_request.video_language})
+            result = self.pipe(sample, generate_kwargs={"task": "translate", "return_timestamps": True, "language": languages.get(name=task_request.video_language).alpha_2})
             timestamped_dict = format_transcription(result["chunks"])
-            video_data.transcriptions[task_request.video_language] = timestamped_dict
-            video_data.original_language = task_request.video_language
+            video_data.transcriptions["english"] = timestamped_dict
+            video_data.original_language = "english" #task_request.video_language
             video_data.original_script = result["text"]
-            self.mongodb_connection.save_item(video_id=video_data.video_id, content=video_data.model_dump())
+            self.mongodb_connection.save_video(video_data)
             Microservice.remove_files((f"audio-{video_data.video_id}.mp3",))
             status.status = True
         self.rabbitmq_connection.send_message(status.to_bytes())
@@ -82,7 +82,7 @@ def read(file_uri, normalized=False):
     try:
         out, err = (
             ffmpeg.input(file_uri)
-            .output('pipe:', format='wav')
+            .output('pipe:', format='wav', ac=1, ar=16000)
             .run(capture_stdout=True, capture_stderr=True)
         )
         a = np.frombuffer(out, np.int16)
