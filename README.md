@@ -5,6 +5,15 @@ AU-DUB is an advanced platform designed for the automatic dubbing of videos, uti
 ## Features
 
 ## Installation and Running
+### Platform Testing
+- [Docker Engine](https://www.docker.com/) 27.1.1
+- [Docker Compose](https://www.docker.com/) 2.29.1
+
+#### Setup Environment
+
+```sh
+docker compose -f docker/docker-compose.yaml up -d
+```
 ### Local Development
 #### Prerequisites
 - [Docker Engine](https://www.docker.com/) 27.1.1
