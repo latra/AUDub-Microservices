@@ -53,8 +53,12 @@ class TranslationTask(Task):
     video_id: str
     target_language: str
 
+class TTSTask(Task):
+    video_id: str
+
 task_classes = {
     TaskTypes.PREPROCESSING: PreprocessingTask,
     TaskTypes.SPEECH_TO_TEXT: STTTask,
     TaskTypes.TRANSLATION: TranslationTask,
+    TaskTypes.TEXT_TO_SPEECH: TTSTask,
 }
