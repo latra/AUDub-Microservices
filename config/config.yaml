@@ -2,7 +2,7 @@ microservice:
   localstorage: ./tmp
   
 filestorage:
-  path: ./data/
+  path: /data/
 
 rabbitmq:
   host: 172.20.0.3

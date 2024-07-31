@@ -35,7 +35,7 @@ The script of the original video is:
                 'content': promp,
             },
             ])
-            video_data.transcriptions[task_request.target_language] =  VideoTranscription( TranscriptionStatus.PROCESSED, get_translated_dict(response['message']['content']))
+            video_data.transcriptions[task_request.target_language] =  VideoTranscription(status= TranscriptionStatus.PROCESSED,transcription= get_translated_dict(response['message']['content']))
             self.mongodb_connection.save_video(video_data)
 
             status.status = True

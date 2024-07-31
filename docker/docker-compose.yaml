@@ -31,7 +31,13 @@ services:
         ipv4_address: 172.20.0.10
 
     restart: always
-
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
   preprocessing:
     build: 
       context: ..
@@ -58,7 +64,13 @@ services:
       audub-network:
         ipv4_address: 172.20.0.5
     restart: always
-
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
   translation:
     build: 
       context: ..
