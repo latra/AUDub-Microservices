@@ -115,10 +115,10 @@ Different modules can be used by directly ending a message through the queue spe
 ```
 ## Credits
 
-- [OpenAI - Whisper]() - Used for video transcription
-- [Meta - Llama]() - Used for video translation
-- [Coqui - Coqui XTTS]() - Used for TTS and Voice Clonning
+- [OpenAI - Whisper](https://openai.com/research/whisper) - Used for video transcription
+- [Meta - Llama](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/) - Used for video translation
+- [Coqui - Coqui XTTS](https://coqui.ai/) - Used for TTS and Voice Cloning
 
 ## Authors
 - [Paula "Latra" Gallucci Zurita](https://github.com/latra)
-- [David Sarrat Gonzalez]()
+- [David Sarrat González](https://github.com/davidsarratgonzalez)
