@@ -1,4 +1,4 @@
-from utils.config import load_config, Collections, Queues
+from utils.config import load_config, Collections, Types, Queues
 from repositories.mongodb import MongoConnection
 from repositories.rabbitmq import RabbitMQConnector
 from repositories.filestorage import FileManager
@@ -10,10 +10,7 @@ import ffmpeg
 
 class PreprocessingService(Microservice):
     def __init__(self, config_path) -> None:
-        self.config: dict = load_config(config_path)
-        self.mongodb_connection: MongoConnection = MongoConnection(self.config)
-        self.rabbitmq_connection: RabbitMQConnector = RabbitMQConnector(self.config, Queues.video_queue)
-        self.filestorage: FileManager = FileManager(self.config)
+        super().__init__(config_path, Queues.video_queue)
 
     def start(self):
         self.rabbitmq_connection.subscribe(task_classes[TaskTypes.PREPROCESSING], self.callback)
@@ -25,24 +22,24 @@ class PreprocessingService(Microservice):
         isolated_files = (f'video-{task_request.video_id}.mp4', f'audio-{task_request.video_id}.mp3')
 
         if task_request.video_source == VideoSource.YOUTUBE:
-            video_name = download_video(task_request.video_id, task_request.video_uri)
+            video_name = download_video(task_request.video_id, task_request.video_uri, self.localstorage)
         
         if video_name:
             ffmpeg.input(video_name).output(isolated_files[0], vcodec='copy', an=None).run()
+            video_info = ffmpeg.probe(isolated_files[0])
 
             # Extraer la pista de audio
             ffmpeg.input(video_name).output(isolated_files[1]).run()
-
-            # Aquí puedes agregar el procesamiento adicional y guardado en MongoDB si es necesario
-            video_info = ffmpeg.probe(isolated_files[0])
             audio_info = ffmpeg.probe(isolated_files[1])
 
-            video_uri = self.filestorage.save_file(Collections.videos, task_request.video_id, isolated_files[0], open(isolated_files[0], 'rb').read())
-            audio_uri = self.filestorage.save_file(Collections.videos, task_request.video_id, isolated_files[1], open(isolated_files[1], 'rb').read())
+            # Aquí puedes agregar el procesamiento adicional y guardado en MongoDB si es necesario
+
+            video_uri = self.filestorage.upload_original(task_request.video_id, Types.video, open(isolated_files[0], 'rb').read())
+            audio_uri = self.filestorage.upload_original(task_request.video_id, Types.voice, open(isolated_files[1], 'rb').read())
             self.remove_files(isolated_files)
 
-            new_video = Video(video_id=task_request.video_id, video_metadata=VideoMetadata.from_video_info(video_uri, video_info),
-                              audio_metadata=AudioMetadata.from_audio_info(audio_uri, audio_info), transcriptions={}, original_script= None, original_language=None)
+            new_video = Video(video_id=task_request.video_id, video_metadata=VideoMetadata.from_video_info(video_info),
+                              audio_metadata=AudioMetadata.from_audio_info(audio_info), transcriptions={}, original_script= None, original_language=None)
             self.mongodb_connection.save_video(new_video)
             status.status = True
         self.rabbitmq_connection.send_message(status.to_bytes())

@@ -1,9 +1,9 @@
 from yt_dlp import YoutubeDL
 
-def download_video(video_name, video_url) -> str:
+def download_video(video_name, video_url, storage_path: str) -> str:
     ydl_opts = {
-        'format': 'best',
-        'outtmpl': f'{video_name}.%(ext)s',
+        # 'format': 'best',
+        'outtmpl': f'{storage_path}/{video_name}.%(ext)s',
     }
     try:
         with YoutubeDL(ydl_opts) as ydl:

@@ -1,8 +1,20 @@
 from pydantic import BaseModel
 from typing import Optional
+from enum import Enum
+
+class TranscriptionStatus(int, Enum):
+    PENDING = 0
+    TRANCRIPTED = 1
+    PROCESSED = 2
+
+
+
+class VideoTranscription(BaseModel):
+    status: TranscriptionStatus
+    transcription: dict
+
 
 class VideoMetadata(BaseModel):
-    uri: str
     format: str
     bitrate: int
     width: int
@@ -10,9 +22,8 @@ class VideoMetadata(BaseModel):
     duration: float
 
     @classmethod
-    def from_video_info(cls, video_uri: str, video_info: dict):
+    def from_video_info(cls, video_info: dict):
         return cls(
-            uri=video_uri,
             format=video_info['streams'][0]['codec_name'],
             bitrate=int(video_info['streams'][0]['bit_rate']),
             width=int(video_info['streams'][0]['width']),
@@ -21,14 +32,12 @@ class VideoMetadata(BaseModel):
         )
 
 class AudioMetadata(BaseModel):
-    uri: str
     format: str
     bitrate: int
     sample_rate: int
     @classmethod
-    def from_audio_info(cls, audio_uri: str, audio_info: dict):
+    def from_audio_info(cls, audio_info: dict):
         return cls(
-            uri=audio_uri,
             format=audio_info['streams'][0]['codec_name'],
             bitrate=int(audio_info['streams'][0]['bit_rate']),
             sample_rate=int(audio_info['streams'][0]['sample_rate']),
@@ -40,7 +49,7 @@ class Video(BaseModel):
     audio_metadata: AudioMetadata
     original_script: Optional[str]
     original_language: Optional[str]
-    transcriptions: dict
+    transcriptions: dict[str, VideoTranscription]
 
     @classmethod
     def from_dict(cls, data: dict):

@@ -14,6 +14,9 @@ AU-DUB is an advanced platform designed for the automatic dubbing of videos, uti
 ```sh
 docker compose -f docker/docker-compose.yaml up -d
 ```
+
+####
+
 ### Local Development
 #### Prerequisites
 - [Docker Engine](https://www.docker.com/) 27.1.1
@@ -64,7 +67,10 @@ python3 src/transcription.py
 ```sh
 python3 src/translation.py
 ```
-#### Usage
+```sh
+python3 src/texttospeech.py
+```
+## Usage
 Different modules can be used by directly ending a message through the queue specified in `config/config.yaml`
 
 **Preprocessing Module**
@@ -114,5 +120,5 @@ Different modules can be used by directly ending a message through the queue spe
 - [Coqui - Coqui XTTS]() - Used for TTS and Voice Clonning
 
 ## Authors
+- [Paula "Latra" Gallucci Zurita](https://github.com/latra)
 - [David Sarrat Gonzalez]()
-- [Paula Gallucci Zurita]()

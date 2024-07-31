@@ -4,15 +4,14 @@ from repositories.rabbitmq import RabbitMQConnector
 from repositories.filestorage import FileManager
 from schemas.task import TaskTypes, task_classes, TranslationTask, TaskStatus
 from schemas.microservice import Microservice
+from schemas.video import VideoTranscription, TranscriptionStatus
 from ollama import Client
 import re
 
 class TranslationService(Microservice):
     def __init__(self, config_path) -> None:
-        self.config: dict = load_config(config_path)
-        self.mongodb_connection: MongoConnection = MongoConnection(self.config)
-        self.rabbitmq_connection: RabbitMQConnector = RabbitMQConnector(self.config, Queues.translation_queue)
-        self.filestorage: FileManager = FileManager(self.config)
+        super().__init__(config_path, Queues.translation_queue)
+
         self.ollama_client = Client(self.config["ollama"]["host"])
         self.ollama_client.create("translation-model", "config/Modelfile")
 
@@ -36,7 +35,7 @@ The script of the original video is:
                 'content': promp,
             },
             ])
-            video_data.transcriptions[task_request.target_language] = get_translated_dict(response['message']['content'])
+            video_data.transcriptions[task_request.target_language] =  VideoTranscription( TranscriptionStatus.PROCESSED, get_translated_dict(response['message']['content']))
             self.mongodb_connection.save_video(video_data)
 
             status.status = True
