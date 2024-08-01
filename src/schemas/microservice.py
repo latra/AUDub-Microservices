@@ -3,7 +3,7 @@ from repositories.mongodb import MongoConnection
 from repositories.rabbitmq import RabbitMQConnector
 from repositories.filestorage import FileManager
 from schemas.task import Task
-from os import remove, path
+from os import remove, path, makedirs
 
 class Microservice:
     def __init__(self, config_path, task_queue) -> None:
@@ -12,6 +12,7 @@ class Microservice:
         self.mongodb_connection: MongoConnection = MongoConnection(self.config)
         self.rabbitmq_connection: RabbitMQConnector = RabbitMQConnector(self.config, task_queue)
         self.filestorage: FileManager = FileManager(self.config)
+        makedirs(self.localstorage, exist_ok= True)
 
     def callback(self, task_request: Task):
         raise NotImplementedError()
@@ -24,3 +25,6 @@ class Microservice:
         tmp_file = open(path.join(self.localstorage, file_name), "wb")
         tmp_file.write(file_data)
         tmp_file.close()
+
+    def get_temporal_path(self, file_name: str) -> str:
+        return path.join(self.localstorage, file_name)

@@ -22,7 +22,7 @@ class FileManager:
         return self._save_file(os.path.join(self.path, "voices"), voice_id + ".mp3", file_data)
 
     def download_original(self, video_id: str, file_type: Types) -> bytes:
-        return self._get_file(os.path.join(self.path, video_id, file_type.value))
+        return self._get_file(os.path.join(self.path, "videos", video_id, file_type.value))
     def download_partials(self, video_id: str, language: str, timestamp: str) -> bytes:
         return self._get_file(os.path.join(self.path, "videos", video_id, language, "partial", timestamp + ".mp3"))
     def download_voice(self, video_id: str, language: str) -> bytes:

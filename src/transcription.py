@@ -13,20 +13,6 @@ import numpy as np
 class TranscriptionService(Microservice):
     def __init__(self, config_path) -> None:
         super().__init__(config_path, Queues.transcription_queue)
-        model, processor, torch_dtype, device = self.start_model()
-        self.pipe = pipeline(
-            "automatic-speech-recognition",
-            model=model,
-            tokenizer=processor.tokenizer,
-            feature_extractor=processor.feature_extractor,
-            max_new_tokens=128,
-            chunk_length_s=30,
-            batch_size=16,
-            return_timestamps=True,
-            torch_dtype=torch_dtype,
-            device=device,
-        )
-
 
     def start_model(self):
         device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -50,8 +36,23 @@ class TranscriptionService(Microservice):
         status = TaskStatus(task_uuid=task_request.task_uuid, status=False, message="")
         video_data = self.mongodb_connection.get_video(task_request.video_id)
         if video_data:
-            Microservice.save_temporal_file(f"audio-{video_data.video_id}.mp3", self.filestorage.download_original(video_data.video_id, Types.voice))
-            audio_array = read(f"audio-{video_data.video_id}.mp3", normalized=True)
+            model, processor, torch_dtype, device = self.start_model()
+            self.pipe = pipeline(
+                "automatic-speech-recognition",
+                model=model,
+                tokenizer=processor.tokenizer,
+                feature_extractor=processor.feature_extractor,
+                max_new_tokens=128,
+                chunk_length_s=30,
+                batch_size=16,
+                return_timestamps=True,
+                torch_dtype=torch_dtype,
+                device=device,
+            )
+
+
+            self.save_temporal_file(f"audio-{video_data.video_id}.mp3", self.filestorage.download_original(video_data.video_id, Types.voice))
+            audio_array = read(self.get_temporal_path(f"audio-{video_data.video_id}.mp3"), normalized=True)
             sample = {"array": audio_array, "sampling_rate": 16000}
 
             if task_request.video_language:
@@ -66,7 +67,7 @@ class TranscriptionService(Microservice):
             video_data.original_language = "english"
             video_data.original_script = result["text"]
             self.mongodb_connection.save_video(video_data)
-            Microservice.remove_files((f"audio-{video_data.video_id}.mp3",))
+            self.remove_files((f"audio-{video_data.video_id}.mp3",))
             status.status = True
         self.rabbitmq_connection.send_message(status.to_bytes())
         

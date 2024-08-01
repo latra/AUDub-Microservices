@@ -25,17 +25,17 @@ class PreprocessingService(Microservice):
             video_name = download_video(task_request.video_id, task_request.video_uri, self.localstorage)
         
         if video_name:
-            ffmpeg.input(video_name).output(isolated_files[0], vcodec='copy', an=None).run()
-            video_info = ffmpeg.probe(isolated_files[0])
+            ffmpeg.input(video_name).output(self.get_temporal_path(isolated_files[0]), vcodec='copy', an=None).run()
+            video_info = ffmpeg.probe(self.get_temporal_path(isolated_files[0]))
 
             # Extraer la pista de audio
-            ffmpeg.input(video_name).output(isolated_files[1]).run()
-            audio_info = ffmpeg.probe(isolated_files[1])
+            ffmpeg.input(video_name).output(self.get_temporal_path(isolated_files[1])).run()
+            audio_info = ffmpeg.probe(self.get_temporal_path(isolated_files[1]))
 
             # Aquí puedes agregar el procesamiento adicional y guardado en MongoDB si es necesario
 
-            video_uri = self.filestorage.upload_original(task_request.video_id, Types.video, open(isolated_files[0], 'rb').read())
-            audio_uri = self.filestorage.upload_original(task_request.video_id, Types.voice, open(isolated_files[1], 'rb').read())
+            video_uri = self.filestorage.upload_original(task_request.video_id, Types.video, open(self.get_temporal_path(isolated_files[0]), 'rb').read())
+            audio_uri = self.filestorage.upload_original(task_request.video_id, Types.voice, open(self.get_temporal_path(isolated_files[1]), 'rb').read())
             self.remove_files(isolated_files)
 
             new_video = Video(video_id=task_request.video_id, video_metadata=VideoMetadata.from_video_info(video_info),
