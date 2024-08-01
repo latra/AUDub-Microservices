@@ -25,6 +25,7 @@ class Microservice:
         tmp_file = open(path.join(self.localstorage, file_name), "wb")
         tmp_file.write(file_data)
         tmp_file.close()
+        return path.join(self.localstorage, file_name)
 
     def get_temporal_path(self, file_name: str) -> str:
         return path.join(self.localstorage, file_name)

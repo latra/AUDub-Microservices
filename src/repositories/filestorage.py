@@ -16,7 +16,7 @@ class FileManager:
         return self._save_file(os.path.join(self.path, "videos", video_id, language, "partial"), timestamp + ".mp3", file_data)
 
     def upload_translation_audio(self, video_id: str, language: str, file_data: bytes) -> str:
-        return self._save_file(os.path.join(self.path, "videos", video_id, language), "tranlsated.mp3", file_data)
+        return self._save_file(os.path.join(self.path, "videos", video_id, language), "tranlsated.mp4", file_data)
 
     def upload_voice(self, voice_id: str, file_data: bytes) -> str:
         return self._save_file(os.path.join(self.path, "voices"), voice_id + ".mp3", file_data)

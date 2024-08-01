@@ -2,7 +2,7 @@ microservice:
   localstorage: ./tmp
   
 filestorage:
-  path: /data/
+  path: ./data-microservices/
 
 rabbitmq:
   host: 172.20.0.3
@@ -15,6 +15,7 @@ rabbitmq:
   translation_queue: translation_queue
   tts_queue: tts_queue
   status_queue: status_queue 
+  mount_queue: mount_queue 
 
 mongodb:
   host: 172.20.0.2
