@@ -6,7 +6,6 @@ class Types(str, Enum):
     background = "background.mp3"
     video = "video.mp4"
 
-
 class Collections(str, Enum):
     videos = "video_collection"
     voices = "voice_collection"
@@ -17,6 +16,7 @@ class Queues(str, Enum):
     translation_queue= "translation_queue"
     tts_queue= "tts_queue"
     mount_queue= "mount_queue"
+    subtitles_queue= "subtitles_queue"
 
 def load_config(config_path: str) -> dict:
     with open(config_path, 'r') as file:

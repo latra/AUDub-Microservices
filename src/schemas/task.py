@@ -10,6 +10,7 @@ class TaskTypes(str, Enum):
     TEXT_TO_SPEECH = "TEXT_TO_SPEECH"
     MOUNT_AUDIO = "MOUNT_AUDIO"
     VOICE_PROCESSING = "VOICE_PROCESSING"
+    SUBTITLES = "SUBTITLES"
 
 class VideoSource(str, Enum):
     YOUTUBE = "YOUTUBE"
@@ -63,10 +64,15 @@ class MountTask(Task):
     video_id: str
     target_language: str
 
+class SubtitlesTask(Task):
+    video_id: str
+    language: str
+
 task_classes = {
     TaskTypes.PREPROCESSING: PreprocessingTask,
     TaskTypes.SPEECH_TO_TEXT: STTTask,
     TaskTypes.TRANSLATION: TranslationTask,
     TaskTypes.TEXT_TO_SPEECH: TTSTask,
     TaskTypes.MOUNT_AUDIO: MountTask,
+    TaskTypes.SUBTITLES: SubtitlesTask,
 }

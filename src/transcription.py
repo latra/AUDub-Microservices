@@ -35,6 +35,7 @@ class TranscriptionService(Microservice):
     def callback(self, task_request: STTTask):
         status = TaskStatus(task_uuid=task_request.task_uuid, status=False, message="")
         video_data = self.mongodb_connection.get_video(task_request.video_id)
+        print(video_data.video_duration)
         if video_data:
             model, processor, torch_dtype, device = self.start_model()
             self.pipe = pipeline(

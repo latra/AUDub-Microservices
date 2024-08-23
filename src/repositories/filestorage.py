@@ -18,6 +18,9 @@ class FileManager:
     def upload_translation_audio(self, video_id: str, language: str, file_data: bytes) -> str:
         return self._save_file(os.path.join(self.path, "videos", video_id, language), "tranlsated.mp4", file_data)
 
+    def upload_subtitles(self, video_id: str, language: str, file_data: bytes) -> str:
+        return self._save_file(os.path.join(self.path, "videos", video_id),  f"{language}.srt", file_data)
+
     def upload_voice(self, voice_id: str, file_data: bytes) -> str:
         return self._save_file(os.path.join(self.path, "voices"), voice_id + ".mp3", file_data)
 
@@ -27,6 +30,8 @@ class FileManager:
         return self._get_file(os.path.join(self.path, "videos", video_id, language, "partial", timestamp + ".mp3"))
     def download_voice(self, video_id: str, language: str) -> bytes:
         return self._get_file(os.path.join(self.path, "videos", video_id, language, "tranlsated.mp3"))
+    def download_subtitles(self, video_id: str, language: str) -> bytes:
+        return self._get_file(os.path.join(self.path, "videos", video_id, f"{language}.srt"))
 
     def _save_file(self, path: str, file_name: str, file_data: bytes) -> str:
         os.makedirs(path, exist_ok= True)

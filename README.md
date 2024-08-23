@@ -70,6 +70,9 @@ python3 src/translation.py
 ```sh
 python3 src/texttospeech.py
 ```
+```sh
+python3 src/mounter.py
+```
 ## Usage
 Different modules can be used by directly ending a message through the queue specified in `config/config.yaml`
 
@@ -88,7 +91,7 @@ Different modules can be used by directly ending a message through the queue spe
 {
     "task_type": "SPEECH_TO_TEXT",
     "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
-    "video_id": "video_example",
+    "video_id": "ter",
     "video_language": "spanish"
 }
 ```
@@ -111,6 +114,15 @@ Different modules can be used by directly ending a message through the queue spe
     "timestamp_key": "(0.0, 2.0)",
     "voice_target_id": ""
 
+}
+```
+**Mount module**
+```json
+{
+    "task_type": "MOUNT_AUDIO",
+    "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
+    "video_id": "video_example",
+    "target_language": "english"
 }
 ```
 ## Credits

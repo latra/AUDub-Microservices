@@ -40,46 +40,31 @@ class SubtitlesService(Microservice):
                 return (float(start), None)
 
             return (float(start), float(end))
+        def second_to_str(segundos):
+            horas = segundos // 3600
+            minutos = (segundos % 3600) // 60
+            segundos = segundos % 60
+            return f"{int(horas):02}:{int(minutos):02}:{int(segundos):02},000"
+
         status = TaskStatus(task_uuid=task_request.task_uuid, status=False, message="")
         video_data = self.mongodb_connection.get_video(task_request.video_id)
         if video_data:
             if task_request.language in video_data.transcriptions:
-                video = self.save_temporal_file(Types.video, self.filestorage.download_original(task_request.video_id, Types.video))
                 transcription_dict = video_data.transcriptions[task_request.language].transcription
-
-                # Cargar el video
-                video = VideoFileClip(video)
-                # Crear una lista de clips de subtítulos
-                clips = [video]
-
-                for key, text in transcription_dict.items():
-                    # Crear un clip de texto
-                    multiline_text = split_text(text, video.w * 0.9, 24, 'Arial')
-
-                    start, end = convert_timing(key)
-                    txt_clip = TextClip(
-                        multiline_text, 
-                        fontsize=24,  # Tamaño de fuente razonable
-                        font='Arial', 
-                        color='white', 
-                        bg_color='black',
-                        size=(video.w * 0.9, calculate_text_height(multiline_text, 24, video.w))  # Limitar el ancho del texto al 90% del ancho del video
-                    )
-                    txt_clip = txt_clip.set_pos(('center', video.h - calculate_text_height(multiline_text, 24, video.w) - 50)).set_duration(end - start).set_start(start)
-                    clips.append(txt_clip)
-                # print(clips)
-                # Superponer los subtítulos al video original
-                video_con_subtitulos = CompositeVideoClip(clips)
-
-                video_con_subtitulos.write_videofile(
-                    "video_con_subtitulos.mp4",
-                    codec="libx264",
-                    ffmpeg_params=["-crf", "18", "-preset", "fast"]
-                )
-                audio = self.save_temporal_file(Types.voice, self.filestorage.download_original(task_request.video_id, Types.voice))
-
-                add_audio_to_video("video_con_subtitulos.mp4", audio, "video_audio_subtitled.mp4")
-                self.rabbitmq_connection.send_message(status.to_bytes())
+                print(transcription_dict)
+                with open(self.get_temporal_path("subtitles.srt"), 'w') as archivo_srt:
+                    for i, (time, frase) in enumerate(transcription_dict.items(), start=1):
+                        (inicio, fin) = convert_timing(time)
+                        if not fin:
+                            fin=video_data.video_duration
+                        inicio_srt = second_to_str(inicio)
+                        fin_srt = second_to_str(fin)
+                        archivo_srt.write(f"{i}\n")
+                        archivo_srt.write(f"{inicio_srt} --> {fin_srt}\n")
+                        archivo_srt.write(f"{frase}\n\n")
+                self.filestorage.upload_subtitles(task_request.video_id, task_request.language, open(self.get_temporal_path("subtitles.srt"), "rb").read())
+                self.remove_files(["subtitles.srt"])
+        self.rabbitmq_connection.send_message(status.to_bytes())
         
 def add_audio_to_video(video_file, audio_file, output_file):
     # Asegurarse de que el audio se guarda en un formato compatible

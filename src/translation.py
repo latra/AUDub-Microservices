@@ -51,7 +51,8 @@ def get_translated_dict(response: str):
 
     # Crear el diccionario
     transcription_dict = {f"({start}, {end})": text for start, end, text in matches}
-
+    if len(transcription_dict) == 0 :
+        print("ERROR on translate: {}".format(response))
     return transcription_dict
 
 def format_transcription(transcription):

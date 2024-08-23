@@ -2,7 +2,7 @@ microservice:
   localstorage: ./tmp
   
 filestorage:
-  path: ./data-microservices/
+  path: ./data
 
 rabbitmq:
   host: 172.20.0.3
@@ -16,6 +16,7 @@ rabbitmq:
   tts_queue: tts_queue
   status_queue: status_queue 
   mount_queue: mount_queue 
+  subtitles_queue: subtitles_queue 
 
 mongodb:
   host: 172.20.0.2
@@ -28,4 +29,4 @@ mongodb:
   voice_collection: voices
 
 ollama:
-  host:  172.20.0.10
+  host:  localhost

@@ -45,6 +45,7 @@ class AudioMetadata(BaseModel):
     
 class Video(BaseModel):
     video_id: str
+    video_duration: float
     video_metadata: VideoMetadata
     audio_metadata: AudioMetadata
     original_script: Optional[str]
@@ -55,6 +56,7 @@ class Video(BaseModel):
     def from_dict(cls, data: dict):
         return cls(
             video_id=data['video_id'],
+            video_duration=data['video_duration'],
             video_metadata=VideoMetadata(**data['video_metadata']),
             audio_metadata=AudioMetadata(**data['audio_metadata']),
             transcriptions=data['transcriptions'],

@@ -29,7 +29,13 @@ services:
     networks:
       audub-network:
         ipv4_address: 172.20.0.10
-
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
 networks:
   audub-network:

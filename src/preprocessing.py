@@ -33,12 +33,12 @@ class PreprocessingService(Microservice):
             audio_info = ffmpeg.probe(self.get_temporal_path(isolated_files[1]))
 
             # Aquí puedes agregar el procesamiento adicional y guardado en MongoDB si es necesario
-
-            video_uri = self.filestorage.upload_original(task_request.video_id, Types.video, open(self.get_temporal_path(isolated_files[0]), 'rb').read())
-            audio_uri = self.filestorage.upload_original(task_request.video_id, Types.voice, open(self.get_temporal_path(isolated_files[1]), 'rb').read())
+            video_duration = float(video_info['format']['duration'])
+            
+            self.filestorage.upload_original(task_request.video_id, Types.video, open(self.get_temporal_path(isolated_files[0]), 'rb').read())
+            self.filestorage.upload_original(task_request.video_id, Types.voice, open(self.get_temporal_path(isolated_files[1]), 'rb').read())
             self.remove_files(isolated_files)
-
-            new_video = Video(video_id=task_request.video_id, video_metadata=VideoMetadata.from_video_info(video_info),
+            new_video = Video(video_id=task_request.video_id, video_duration=video_duration, video_metadata=VideoMetadata.from_video_info(video_info),
                               audio_metadata=AudioMetadata.from_audio_info(audio_info), transcriptions={}, original_script= None, original_language=None)
             self.mongodb_connection.save_video(new_video)
             status.status = True
