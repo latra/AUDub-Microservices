@@ -109,11 +109,11 @@ Different modules can be used by directly ending a message through the queue spe
 {
     "task_type": "TEXT_TO_SPEECH",
     "task_uuid": "123e4567-e89b-12d3-a456-426614174000",
-    "video_id": "video_example",
-    "target_language": "english",
-    "timestamp_key": "(0.0, 2.0)",
-    "voice_target_id": ""
-
+    "media_id": "short",
+    "target_language": "spanish",
+    "max_target_time":50,
+    "text":"Esta semana podría ser ojo de tritón o quizás un mapa del tesoro. Nunca se sabe hasta que no miras. ¿Qué será lo que tiene Antonio?",
+    "voice_target_id": "tauren"
 }
 ```
 **Mount module**

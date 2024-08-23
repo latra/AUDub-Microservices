@@ -13,3 +13,4 @@ ollama==0.3.0
 pycountry==24.6.1
 pydub==0.25.1
 moviepy==1.0.3
+TTS==0.22.0

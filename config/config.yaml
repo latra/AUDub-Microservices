@@ -5,7 +5,7 @@ filestorage:
   path: ./data
 
 rabbitmq:
-  host: 172.20.0.3
+  host: localhost
   port: 15672
   username: guest
   password: password
@@ -19,7 +19,7 @@ rabbitmq:
   subtitles_queue: subtitles_queue 
 
 mongodb:
-  host: 172.20.0.2
+  host: localhost
   port: 27017
   username: root
   password: password

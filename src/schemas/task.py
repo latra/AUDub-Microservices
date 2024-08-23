@@ -55,10 +55,11 @@ class TranslationTask(Task):
     target_language: str
 
 class TTSTask(Task):
-    video_id: str
-    timestamp_key: str
+    media_id: str
+    text: str
     target_language: str
-    voice_target_id: str
+    voice_target_id: Optional[str]
+    max_target_time: int
 
 class MountTask(Task):
     video_id: str

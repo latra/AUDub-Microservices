@@ -26,10 +26,24 @@ class FileManager:
 
     def download_original(self, video_id: str, file_type: Types) -> bytes:
         return self._get_file(os.path.join(self.path, "videos", video_id, file_type.value))
+    
     def download_partials(self, video_id: str, language: str, timestamp: str) -> bytes:
         return self._get_file(os.path.join(self.path, "videos", video_id, language, "partial", timestamp + ".mp3"))
-    def download_voice(self, video_id: str, language: str) -> bytes:
-        return self._get_file(os.path.join(self.path, "videos", video_id, language, "tranlsated.mp3"))
+    
+    def download_voice(self, voice_id: str) -> list[bytes]:
+        array_de_bytes = []
+    
+        # Recorre todos los archivos en la carpeta especificada
+        for nombre_fichero in os.listdir(os.path.join(self.path, "voices", voice_id)):
+            ruta_completa = os.path.join(self.path, "voices", voice_id, nombre_fichero)
+            # Verifica si es un archivo (ignora carpetas)
+            if os.path.isfile(ruta_completa):
+                with open(ruta_completa, 'rb') as fichero:
+                    # Lee el archivo y añade los bytes a la lista
+                    array_de_bytes.append(fichero.read())
+        return array_de_bytes
+        # return self._get_file(os.path.join(self.path, "voices", voice_id + ".mp3"))
+    
     def download_subtitles(self, video_id: str, language: str) -> bytes:
         return self._get_file(os.path.join(self.path, "videos", video_id, f"{language}.srt"))
 

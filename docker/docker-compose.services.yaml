@@ -12,7 +12,8 @@ services:
     networks:
       audub-network:
         ipv4_address: 172.20.0.2
-
+    ports:
+      - 27017:27017
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
@@ -22,6 +23,9 @@ services:
     networks:
       audub-network:
         ipv4_address: 172.20.0.3
+    ports:
+      - 15672:15672
+      - 5672:5672 
         
   ollama:
     image: ollama/ollama:0.3.0
@@ -36,7 +40,8 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-
+    ports:
+      - 11434:11434
 networks:
   audub-network:
     driver: bridge

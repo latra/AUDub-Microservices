@@ -27,5 +27,16 @@ class Microservice:
         tmp_file.close()
         return path.join(self.localstorage, file_name)
 
+    def save_temporal_folder(self, folder_name:str, extension, files_data:list[bytes]):
+        print(len(files_data))
+        voices_paths = []
+        makedirs(path.join(self.localstorage, folder_name), exist_ok= True)
+        for index in range(0, len(files_data)):
+            tmp_file = open(path.join(self.localstorage, folder_name, str(index) + "." + extension), "wb")
+            tmp_file.write(files_data[index])
+            tmp_file.close()
+            voices_paths.append(path.join(self.localstorage, folder_name, str(index) + "." + extension))
+        return voices_paths
+
     def get_temporal_path(self, file_name: str) -> str:
         return path.join(self.localstorage, file_name)

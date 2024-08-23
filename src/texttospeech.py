@@ -34,27 +34,25 @@ class TTSService(Microservice):
                 rate = wav_file.getframerate()
                 duration = frames / float(rate)
                 return duration
-        def convert_timing(timing_str):
-            start, end = timing_str.strip("()").split(",")
-            return (float(start), float(end))
-        start_time, end_time = convert_timing(task_request.timestamp_key)
-        max_audio_time = end_time - start_time
+        max_audio_time = task_request.max_target_time
         time = max_audio_time + 1
         status = TaskStatus(task_uuid=task_request.task_uuid, status=False, message="")
-        video_data: Video = self.mongodb_connection.get_video(task_request.video_id)
-        voice_data = None
         speed = 1
-        if video_data:
-            text_to_say = video_data.transcriptions[task_request.target_language].transcription[task_request.timestamp_key]
-            while time > max_audio_time:
+        if task_request.voice_target_id:
+            voices = self.save_temporal_folder("voice", "mp3" ,self.filestorage.download_voice(voice_id=task_request.voice_target_id))
+        text_to_say = task_request.text
+        while time > max_audio_time:
+            if not task_request.voice_target_id:
                 self.tts.tts_to_file(text=text_to_say, language= languages.get(name=task_request.target_language).alpha_2, speaker="Daisy Studious", file_path=self.get_temporal_path(f"temporal_{task_request.task_uuid}.wav"), speed=speed)
-                time = get_wav_duration(self.get_temporal_path(f"temporal_{task_request.task_uuid}.wav"))
-                speed += 0.5
-                if speed >= 2:
-                    break
-            self.filestorage.upload_partial_audio(video_data.video_id, task_request.target_language, task_request.timestamp_key, open(self.get_temporal_path(f"temporal_{task_request.task_uuid}.wav"), "rb").read())
-            self.remove_files([f"temporal_{task_request.task_uuid}.wav"])
-            pass
+            else:
+                self.tts.tts_to_file(text=text_to_say, language= languages.get(name=task_request.target_language).alpha_2, speaker_wav=voices, file_path=self.get_temporal_path(f"temporal_{task_request.task_uuid}.wav"), speed=speed)
+
+            time = get_wav_duration(self.get_temporal_path(f"temporal_{task_request.task_uuid}.wav"))
+            speed += 0.5
+            if speed >= 2:
+                break
+        self.filestorage.upload_partial_audio(task_request.media_id, task_request.target_language, task_request.task_uuid, open(self.get_temporal_path(f"temporal_{task_request.task_uuid}.wav"), "rb").read())
+        self.remove_files([f"temporal_{task_request.task_uuid}.wav"])
         self.rabbitmq_connection.send_message(status.to_bytes())
         
 
