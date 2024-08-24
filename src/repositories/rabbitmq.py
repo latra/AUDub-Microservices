@@ -22,10 +22,12 @@ class RabbitMQConnector:
 
         channel.queue_declare(queue=self.job_queue)
         channel.basic_consume(queue=self.job_queue, on_message_callback=lambda ch, method, properties, body: self.callback(ch, method, properties, body, task_type, callback),
-                          auto_ack=True)
+                          auto_ack=False)
         channel.start_consuming()
     
     def callback(self, ch, method, properties, body, type_target, function_callback):
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+
         task_request = Task.from_json(json.loads(body))
         if type(task_request) == type_target:
             print("Task...")

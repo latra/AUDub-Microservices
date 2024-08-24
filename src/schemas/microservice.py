@@ -17,9 +17,13 @@ class Microservice:
     def callback(self, task_request: Task):
         raise NotImplementedError()
 
-    def remove_files(self, files_to_remove: tuple[str]):
+    def remove_files(self, files_to_remove: tuple[str], add_localpath = False):
         for file in files_to_remove:
-            remove(path.join(self.localstorage, file))
+            if not add_localpath:
+                remove(path.join(self.localstorage, file))
+            else:
+                print(file)
+                remove(file)
 
     def save_temporal_file(self, file_name:str, file_data:bytes):
         tmp_file = open(path.join(self.localstorage, file_name), "wb")

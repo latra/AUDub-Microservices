@@ -60,6 +60,7 @@ class TTSTask(Task):
     target_language: str
     voice_target_id: Optional[str]
     max_target_time: int
+    voice_speed: float = 1
 
 class MountTask(Task):
     video_id: str

@@ -37,9 +37,9 @@ class TTSService(Microservice):
         max_audio_time = task_request.max_target_time
         time = max_audio_time + 1
         status = TaskStatus(task_uuid=task_request.task_uuid, status=False, message="")
-        speed = 1
+        speed = task_request.voice_speed
         if task_request.voice_target_id:
-            voices = self.save_temporal_folder("voice", "mp3" ,self.filestorage.download_voice(voice_id=task_request.voice_target_id))
+            voices = self.save_temporal_folder("voice", "ogg" ,self.filestorage.download_voice(voice_id=task_request.voice_target_id))
         text_to_say = task_request.text
         while time > max_audio_time:
             if not task_request.voice_target_id:
@@ -51,8 +51,9 @@ class TTSService(Microservice):
             speed += 0.5
             if speed >= 2:
                 break
-        self.filestorage.upload_partial_audio(task_request.media_id, task_request.target_language, task_request.task_uuid, open(self.get_temporal_path(f"temporal_{task_request.task_uuid}.wav"), "rb").read())
+        self.filestorage.upload_partial_audio(task_request.media_id, task_request.target_language, task_request.voice_target_id, task_request.task_uuid, open(self.get_temporal_path(f"temporal_{task_request.task_uuid}.wav"), "rb").read())
         self.remove_files([f"temporal_{task_request.task_uuid}.wav"])
+        self.remove_files(voices, True)
         self.rabbitmq_connection.send_message(status.to_bytes())
         
 
